@@ -1,45 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+</head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Swiftle Solver</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code&display=swap" rel="stylesheet">
+  
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
   <style>
     body {
-      font-family: system-ui, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      color: #333;
-    }
-    header {
-      background: #111;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-    }
-    nav {
-      background: #222;
-      padding: 0.5rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    main {
+      font-family: 'Merriweather', serif;
+      line-height: 1.7;
+      font-size: 1.1rem;
       max-width: 800px;
       margin: auto;
       padding: 2rem;
+      background: #fdfcfb;
+      color: #333;
+    }
+
+    h1, h2, h3 {
+      font-weight: 700;
+    }
+
+    code, pre {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+    }
+
+    pre {
+      background-color: #2d2d2d;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    video {
+      display: block;
+      max-width: 100%;
+      margin: 2rem auto;
+      border: 2px solid #ccc;
+      border-radius: 12px;
     }
   </style>
-  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
-
 </head>
 <body>
   <header>
@@ -104,10 +109,9 @@
 
     <p>Swiftle doesn't have an API, and I didn't want to even attempt to reverse-engineer its frontend. So instead, I opted to use brute-force automation. The script needed to move the mouse to the search bar coordinates on my screen, click down, type the name of the song, and press Enter to submit. To determine the location of the search bar on my computer, I ran a separate program using PyAutoGUI. Once executed, the program waits three seconds for me to hover my cursor over Swiftle's search bar before printing the cursor's coordinates. Though I was unfamiliar with the package at the start of this project, it turned out to be straightforward.</p>
 
-    <pre><code class="language-python">
-    time.sleep(3)
-    x, y = pyautogui.position()
-    print(x, y)</code></pre>
+    <pre><code class="language-python">time.sleep(3)
+  x, y = pyautogui.position()
+  print(x, y)</code></pre>
 
     <p>I also needed to reformat the titles for certain songs. The audio recognition API returned some song titles with superfluous information, such as "(Taylor's Version)" or "(feat. Lana Del Rey)," which are indeed useful but aren't recognized by Swiftle, as a human user would likely have trouble distinguishing these. This was a simple fix, as I just needed to remove anything from the titles contained in parentheses.</p>
 

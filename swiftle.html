@@ -103,23 +103,21 @@
     });
   });
   
-  document.querySelectorAll('pre code').forEach(block => {
-    const lines = block.textContent.split('\n');
+  let lastScrollY = window.scrollY;
+  const nav = document.querySelector('nav');
+  
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
 
-    // Remove empty first/last lines
-    if (lines[0].trim() === '') lines.shift();
-    if (lines[lines.length - 1].trim() === '') lines.pop();
+    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      // Scrolling down and past 100px - hide navbar
+      nav.classList.add('hidden');
+    } else {
+      // Scrolling up - show navbar
+      nav.classList.remove('hidden');
+    }
 
-    // Find minimum common indent
-    const minIndent = lines.reduce((indent, line) => {
-      if (!line.trim()) return indent;
-      const match = line.match(/^(\s*)/);
-      return match ? Math.min(indent, match[1].length) : indent;
-    }, Infinity);
-
-    // Dedent all lines
-    const dedented = lines.map(line => line.slice(minIndent)).join('\n');
-    block.textContent = dedented;
+    lastScrollY = currentScrollY;
   });
 </script>
 

@@ -102,11 +102,29 @@
       applyTheme();
     });
   });
+  </script>
+  <script>
+  let lastScrollY = window.scrollY;
+  const nav = document.querySelector('nav');
+
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY && currentScrollY > 50) {
+      // Scrolling down and past 50px, hide navbar
+      nav.classList.add('hidden');
+    } else {
+      // Scrolling up, show navbar
+      nav.classList.remove('hidden');
+    }
+    lastScrollY = currentScrollY;
+  });
 </script>
+
 <body>
   <header>
     <h1>Projects</h1>
-    <p>Tools, experiments, and ideas I’ve brought to life.</p>
+    <p>Tools, experiments, and ideas I've brought to life.</p>
   </header>
 
   <nav>
@@ -115,6 +133,7 @@
       <li><a href="/projects">Projects</a></li>
       <li><a href="/about">About</a></li>
     </ul>
+    <button id="toggle-dark" class="toggle" aria-label="Toggle dark mode">🌙</button>
   </nav>
 
   <main>
@@ -141,7 +160,6 @@
 
   <footer>
     © 2025 Connor Huh. All rights reserved.
-    <button id="toggle-dark" class="toggle-darkmode">🌙</button>
   </footer>
 </body>
 </html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connor Huh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <style>
+    body {
+      font-family: 'Merriweather', serif;
+      line-height: 1.7;
+      font-size: 1.1rem;
+      margin: 0;
+      padding: 0;
+      background: #fdfcfb;
+      color: #333;
+    }
+
+    .nav-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0.5rem 1rem;
+    }
+
+    .navbar {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      background-color: #333;
+      border-radius: 0 0 10px 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .navbar a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 1.2rem 2rem;
+      text-decoration: none;
+      font-family: 'Merriweather', serif;
+    }
+
+    .navbar a:hover {
+      background-color: #555;
+    }
+
+    .content {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    h1, h2, h3 {
+      font-weight: 700;
+    }
+
+    code, pre {
+      font-family: 'Fira Code', monospace;
+      font-size: 15px !important;
+    }
+
+    pre {
+      background-color: #2d2d2d;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    video {
+      display: block;
+      max-width: 100%;
+      margin: 2rem auto;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="nav-wrapper">
+      <ul class="navbar">
+        <li><a href="https://connor-huh.github.io">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/projects">Projects</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </div>
+  
+    <div class="content"> 
+      <main class="projects-page">
+        <section class="intro">
+          <h1>My Projects</h1>
+          <p>Explore a collection of things I've built — from tools and games to experimental ideas. Each one represents a story, a problem, or just something I was curious about.</p>
+        </section>
+    
+        <section class="projects-grid">
+          <article class="project-card">
+            <h2><a href="/swiftle.html">Swiftle Solver</a></h2>
+            <p>A solver for the music guessing game <em>Swiftle</em>. I reverse-engineered the game’s logic and automated audio guessing using frequency analysis and lyric matching.</p>
+          </article>
+    
+          <article class="project-card">
+            <h2><a href="/barrier-options.html">Barrier Option Pricing</a></h2>
+            <p>Math modeling meets financial theory. I modeled exotic options with stochastic volatility using the Heston model and ran Monte Carlo simulations for FX derivatives.</p>
+          </article>
+    
+          <article class="project-card">
+            <h2><a href="/improv-piano.html">Improvisation Engine</a></h2>
+            <p>An experiment in freestyle piano generation. Built using Python + MIDI libraries, it learns from your style and tries to jam along — mistakes and all.</p>
+          </article>
+        </section>
+    </div>
+  </main>
+</body>
+</html>

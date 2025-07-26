@@ -102,21 +102,21 @@
       applyTheme();
     });
   });
-  
+  </script>
+  <script>
   let lastScrollY = window.scrollY;
   const nav = document.querySelector('nav');
-  
+
   window.addEventListener('scroll', () => {
     const currentScrollY = window.scrollY;
 
-    if (currentScrollY > lastScrollY && currentScrollY > 100) {
-      // Scrolling down and past 100px - hide navbar
+    if (currentScrollY > lastScrollY && currentScrollY > 50) {
+      // Scrolling down and past 50px, hide navbar
       nav.classList.add('hidden');
     } else {
-      // Scrolling up - show navbar
+      // Scrolling up, show navbar
       nav.classList.remove('hidden');
     }
-
     lastScrollY = currentScrollY;
   });
 </script>

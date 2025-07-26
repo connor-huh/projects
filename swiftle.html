@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<nav>
-  <ul class="navbar">
-    <li><a href="">Home</a></li>
-    <li><a href="/projects">Projects</a></li>
-    <li><a href="/about">About</a></li>
-    </ul>
-</nav>
-</head>
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Swiftle Solver</title>
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code&display=swap" rel="stylesheet">
-  
   <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
   <style>
+    body {
+      font-family: 'Merriweather', serif;
+      line-height: 1.7;
+      font-size: 1.1rem;
+      margin: 0;
+      padding: 0;
+      background: #fdfcfb;
+      color: #333;
+    }
+
     .navbar {
       list-style-type: none;
-      width: 100%;
-      max-width: none !important;
       margin: 0;
       padding: 0.5rem 1rem;
-      overflow: hidden;
       background-color: #333;
       border-radius: 0 0 10px 10px;
       display: flex;
       justify-content: space-around;
     }
-  
+
     .navbar li {
       display: inline;
     }
-  
+
     .navbar a {
       display: block;
       color: white;
@@ -42,19 +41,15 @@
       text-decoration: none;
       font-family: 'Merriweather', serif;
     }
-  
+
     .navbar a:hover {
       background-color: #555;
     }
-    body {
-      font-family: 'Merriweather', serif;
-      line-height: 1.7;
-      font-size: 1.1rem;
-      max-width: 800px;
-      margin: 0;
-      padding: 2rem;
-      background: #fdfcfb;
-      color: #333;
+
+    .content {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
     }
 
     h1, h2, h3 {

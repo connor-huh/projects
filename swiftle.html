@@ -164,9 +164,10 @@
       <p>The first step was to figure out how to record the Swiftle audio snippet automatically. I used sounddevice to capture audio from my computer. To capture internal audio on my MacBook, I installed a virtual input device called BlackHole. After selecting the correct device index in Python, I was ready to record.</p>
   
       <pre><code class="language-python">def record_audio(filename='snippet.wav'):
-      recording = sd.rec(int(DURATION * FS), samplerate=FS, channels=2, device=DEVICE_INDEX)
-      sd.wait()
-      write(filename, FS, recording)</code></pre>
+recording = sd.rec(int(DURATION * FS), samplerate=FS, channels=2, device=DEVICE_INDEX)
+sd.wait()
+write(filename, FS, recording)
+      </code></pre>
   
       <p>I opted to record the browser audio for 2.5 seconds, which proved to be enough time for the script to recognize the song. While a prolonged time would theoretically increase the chances of accurately identifying the song, it left less time for the script to process everything and enter the answer.</p>
   

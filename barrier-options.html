@@ -52,9 +52,7 @@
       </p>
       
       <img src="gbm-paths.png" alt="Sample FX spot rate paths" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
-      <p class="caption">
-        Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.
-      </p>
+      <p class="caption"> Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.</p>
       
       <p>
       Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs. However, simulating barrier options naively introduces significant variance and discretization bias, especially when monitoring is discrete.
@@ -70,9 +68,7 @@
       To fix this, I implemented Brownian bridge interpolation, which estimates the likelihood of the barrier being breached between discrete time steps. Conceptually, it "fills in the gaps" in each path, which makes the simulation more robust. When interpolated, paths that initially appeared to survive might reveal that they likely crossed the barrier after all. 
       </p>
       <img src="brownian-bridge.png" alt="Brownian bridge adjustment visualization" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
-      <p class="caption">
-        Two FX paths (dashed) that survive discrete monitoring yet likely breach the barrier when interpolated. Brownian bridge adjustment penalizes these cases.
-      </p>
+      <p class="caption"> Two FX paths (dashed) that survive discrete monitoring yet likely breach the barrier when interpolated. Brownian bridge adjustment penalizes these cases. </p>
       
       <h2>Results</h2>
       

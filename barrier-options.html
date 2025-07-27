@@ -34,105 +34,81 @@
 </body>
   <main>
     <div class="content">
-      <h2>Introduction</h2>
+      <h2>Preface</h2>
       <p>
-      Barrier options sit at the intersection of elegant theory and messy implementation. These exotic derivatives are path-dependent — meaning their payoff depends not just on the final price of the underlying, but also on whether certain “barriers” were touched along the way. This nuance makes them tricky to price with traditional closed-form solutions like Black-Scholes. 
+      This paper grew out of a longer-standing interest I’ve had in using simulation to solve problems where closed-form solutions break down. I’d studied European option pricing before, but barrier options seemed like a natural next step—technically richer, more sensitive to model structure, and deeply rooted in practical finance.
       </p>
       
       <p>
-      In this project, I explored a <strong>Monte Carlo simulation method</strong> for pricing <em>foreign exchange (FX) up-and-out call options</em>. My goal was to replicate the pricing behavior of real-world barrier options using random sampling techniques and continuous-time Brownian motion — and to better understand why reflective conditions and discretization errors make this such a rich area for modeling.
+      My goal was to understand the complications of pricing path-dependent derivatives and experiment with methods that mitigate the well-known challenges of simulating rare path behavior. I wanted to implement everything from scratch—model, paths, controls, even variance reduction—both to understand how they work and to explore the limits of pure simulation.
       </p>
       
-      <h2>Why Simulation?</h2>
+      <h2>An Overview of Barrier Options</h2>
+      <p>
+      Barrier options are path-dependent derivatives: their payoff depends not only on the price of the underlying asset at maturity, but also on whether the asset’s path crosses a specified level (the “barrier”) during the life of the option.
+      </p>
       
       <p>
-      While closed-form solutions do exist for some simple barrier cases, they quickly become unwieldy in realistic FX environments. Simulation provides more flexibility: we can model arbitrary paths, fine-tune assumptions, and observe empirical convergence behavior.
+      A classic example is a down-and-out call. It behaves like a standard European call option unless the asset price falls below a certain barrier during the option’s term, in which case the option immediately becomes worthless. These structures are particularly common in foreign exchange (FX) markets due to their cost-effectiveness and conditional hedging features.
       </p>
       
+      <h2>Modeling the FX Rate</h2>
       <p>
-      The idea is simple in principle: simulate many potential price paths of the underlying currency pair, check whether the barrier was breached for each path, and calculate the discounted payoff accordingly. Then, average over all the valid (i.e., not knocked-out) paths to estimate the option value.
-      </p>
-      
-      <h2>Modeling Assumptions</h2>
-      
+      I modeled the FX spot rate \( S_t \) using two stochastic processes:
       <ul>
-        <li>The spot FX rate follows a geometric Brownian motion</li>
-        <li>Volatility and interest rates are constant (though stochastic volatility extensions are possible)</li>
-        <li>The option has a European-style payoff with a single barrier (up-and-out)</li>
+        <li><strong>Geometric Brownian Motion (GBM)</strong>: The classical Black-Scholes model under a risk-neutral measure.</li>
+        <li><strong>Heston Model</strong>: A stochastic volatility model that better captures empirical phenomena like volatility clustering and leverage effects.</li>
       </ul>
-      
-      <p>
-      Paths are discretized using the standard Euler-Maruyama method. A reflective boundary condition is applied: if the simulated spot price crosses the barrier at any step, the option is considered worthless for that path.
-      </p>
-      
-      <h2>Core Pricing Logic</h2>
-      
-      <p>
-      At the heart of the implementation is a loop over Monte Carlo paths. For each simulated path, the algorithm checks whether the barrier was touched. If not, the terminal value is used to compute the payoff of a vanilla call option.
-      </p>
-      
-      <pre><code class="language-python">for i in range(N):
-          path = simulate_path(S0, r, sigma, T, steps)
-          if np.max(path) &gt;= barrier:
-              continue  # knocked out
-          payoff_sum += max(path[-1] - K, 0)</code></pre>
-      
-      <p>
-      The final price is then computed as:
-      </p>
-      
-      <pre><code class="language-python">option_price = np.exp(-r * T) * (payoff_sum / N)</code></pre>
-      
-      <p>
-      Simple as it looks, the challenge lies in tuning <code>N</code> (number of paths), <code>steps</code> (time granularity), and dealing with variance reduction and convergence.
-      </p>
-      
-      <h2>Validation and Convergence</h2>
-      
-      <p>
-      To test the accuracy of the simulation, I compared results to the analytical formula derived by Reiner and Rubinstein. While analytical solutions have their own assumptions, they offer a reasonable benchmark for Monte Carlo outputs.
       </p>
       
       <p>
-      As expected, increasing the number of simulations led to better accuracy and stability. Beyond a certain threshold, however, variance reductions offered diminishing returns — a phenomenon consistent with the <em>law of large numbers</em> and the square-root convergence rate of Monte Carlo estimators.
+      Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs. However, simulating barrier options naïvely introduces significant variance and discretization bias, especially when monitoring is discrete (e.g. daily or hourly).
       </p>
       
-      <h2>Reflections</h2>
-      
+      <h2>Variance Reduction and Interpolation</h2>
       <p>
-      This project helped me build a deeper understanding of path-dependent options and why they’re hard to model in practice. It also reminded me how much of mathematical modeling is about tradeoffs: resolution vs. runtime, precision vs. interpretability, and elegance vs. flexibility.
-      </p>
-      
-      <!-- INSERT YOUR REFLECTION HERE -->
-      <p><em>[Insert a short paragraph here about your learning experience. For example: what confused you at first, what you enjoyed solving, or what surprised you in the process.]</em></p>
-      
-      <h2>Future Directions</h2>
-      
-      <p>
-      There’s a lot of room for future improvement here. For example:
-      </p>
+      To improve estimator efficiency, I incorporated several techniques:
       <ul>
-        <li>Modeling stochastic volatility (e.g., Heston model)</li>
-        <li>Adaptive time-stepping to better capture barrier crossings</li>
-        <li>Implementing antithetic variates or control variates for faster convergence</li>
-        <li>Testing double barrier options or touch options</li>
-        <li>Using GPU acceleration for simulating large batches of paths in parallel</li>
+        <li><strong>Antithetic Variates</strong>: For each simulated path, I also simulate its antithetic complement (by negating the Brownian motion), and average their payoffs to reduce variance.</li>
+        <li><strong>Control Variates</strong>: I use a closely related option with known expected value (like a European call) as a control.</li>
+        <li><strong>Brownian Bridge Interpolation</strong>: Since discrete sampling can miss barrier crossings, the bridge helps estimate whether the barrier was crossed between time steps.</li>
       </ul>
-      
-      <p>
-      More ambitiously, it would be interesting to use machine learning as a surrogate model: train a neural net to approximate the option price surface from a large simulation dataset, enabling fast approximations with minimal computational cost.
       </p>
       
-      <h2>Closing Thoughts</h2>
+      <h2>Sample Python Snippet</h2>
       
+      <pre><code class="language-python">def simulate_gbm_paths(S0, r, sigma, T, steps, n_paths):
+          dt = T / steps
+          paths = np.zeros((n_paths, steps + 1))
+          paths[:, 0] = S0
+          for t in range(1, steps + 1):
+              Z = np.random.randn(n_paths)
+              paths[:, t] = paths[:, t-1] * np.exp((r - 0.5 * sigma**2)*dt + sigma * np.sqrt(dt) * Z)
+          return paths
+      </code></pre>
+      
+      <h2>Results</h2>
       <p>
-      This paper began as a curiosity about FX options and ended up being a satisfying mix of stochastic calculus, simulation, and financial modeling. Writing this code helped me appreciate how much nuance hides behind "just simulate some paths" — and why barrier options are often left to quants and not retail traders.
+      Simulation under GBM gave reasonable estimates but struggled in scenarios with low volatility or tight barriers. The variance reduction techniques dramatically improved convergence and reduced standard error. Brownian bridge interpolation made a measurable difference in correctly classifying knock-outs.
       </p>
       
       <p>
-      If you're interested in the full implementation, feel free to check out the code repository and notebook breakdown.
+      The Heston model added computational cost but yielded more realistic dynamics, especially for FX options. It captured “fat tails” and volatility smiles that GBM couldn’t replicate. I ran empirical tests comparing both models across multiple scenarios and found clear tradeoffs between realism and simplicity.
+      </p>
+      
+      <h2>Reflection</h2>
+      <p>
+      This project was a test of both my modeling intuition and coding precision. Writing a pricing engine from scratch—one that balanced theoretical rigor with practical speed—wasn’t easy. But I walked away with a stronger sense of how real-world derivatives get priced, and why the simplest models often hide the deepest challenges.
+      </p>
+      
+      <p>
+      Going forward, I’d like to explore real-time pricing APIs, calibrate the Heston model to historical data, and maybe even try pricing American-style barrier options.
       </p>
 
+    
+    <p>
+    If you're interested in the full implementation, feel free to check out the code repository and notebook breakdown.
+    </p>
     </div>
   </main>
   <footer>

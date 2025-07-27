@@ -45,24 +45,20 @@
       
       <h2>An Overview of Barrier Options</h2>
       <p>
-      Barrier options are path-dependent derivatives: their payoff depends not only on the price of the underlying asset at maturity, but also on whether the asset’s path crosses a specified level (the “barrier”) during the life of the option.
+      Barrier options are path-dependent derivatives; that is, their payoff depends not only on the price of the underlying asset at maturity, but also on whether the asset’s path crosses a specified level (the “barrier”) during the life of the option.
       </p>
       
       <p>
-      A classic example is a down-and-out call. It behaves like a standard European call option unless the asset price falls below a certain barrier during the option’s term, in which case the option immediately becomes worthless. These structures are particularly common in foreign exchange (FX) markets due to their cost-effectiveness and conditional hedging features.
+      A classic example is a down-and-out call. It behaves like a standard European call option unless the asset price falls below a certain barrier during the option’s term, in which case the option immediately becomes worthless. These structures are particularly common in foreign exchange (FX) markets.
       </p>
       
       <h2>Modeling the FX Rate</h2>
       <p>
-      I modeled the FX spot rate \( S_t \) using two stochastic processes:
-      <ul>
-        <li><strong>Geometric Brownian Motion (GBM)</strong>: The classical Black-Scholes model under a risk-neutral measure.</li>
-        <li><strong>Heston Model</strong>: A stochastic volatility model that better captures empirical phenomena like volatility clustering and leverage effects.</li>
-      </ul>
+      To simulate barrier options in an FX setting, I modeled the spot rate \( S_t \) under two stochastic processes. First, I implemented the classical geometric Brownian motion (GBM) model, which assumes constant volatility and continuous compounding — the standard in Black-Scholes-Merton-style approaches. Then, to better account for empirical volatility clustering and smile/skew effects in FX markets, I extended the simulation to incorporate the Heston model, which introduces a stochastic variance component following its own mean-reverting CIR process.
       </p>
-
-      <img src="gbm-paths.png" alt="Sample paths under GBM" style="max-width:100%; margin: 2rem 0; border: 2px solid #ccc; border-radius: 12px;" />
-      <p style="text-align:center; font-style:italic; font-size: 0.95rem;">
+      
+      <img src="gbm-paths.png" alt="Sample paths under GBM" style="max-width:100%; margin: 1.2rem 0 0.4rem 0; border: 2px solid #ccc; border-radius: 12px;" />
+      <p style="text-align:center; font-style:italic; font-size: 1rem; margin-top: 0;">
       Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.
       </p>
       
@@ -72,15 +68,11 @@
       
       <h2>Variance Reduction and Interpolation</h2>
       <p>
-      To improve estimator efficiency, I incorporated several techniques:
-      <ul>
-        <li><strong>Antithetic Variates</strong>: For each simulated path, I also simulate its antithetic complement (by negating the Brownian motion), and average their payoffs to reduce variance.</li>
-        <li><strong>Control Variates</strong>: I use a closely related option with known expected value (like a European call) as a control.</li>
-        <li><strong>Brownian Bridge Interpolation</strong>: Since discrete sampling can miss barrier crossings, the bridge helps estimate whether the barrier was crossed between time steps.</li>
-      </ul>
+      When simulating discrete monitoring of barrier options, many paths might avoid detection despite likely breaching the barrier between time steps. To mitigate this, I incorporated a Brownian bridge adjustment that estimates the probability of a crossing event between discrete points. This approach adds a penalty (or discount) for borderline paths, significantly improving pricing accuracy in high-volatility or near-barrier scenarios.
       </p>
-      <img src="brownian-bridge.png" alt="Brownian bridge correction" style="max-width:100%; margin: 2rem 0; border: 2px solid #ccc; border-radius: 12px;" />
-      <p style="text-align:center; font-style:italic; font-size: 0.95rem;">
+      
+      <img src="brownian-bridge.png" alt="Brownian bridge correction" style="max-width:100%; margin: 1.2rem 0 0.4rem 0; border: 2px solid #ccc; border-radius: 12px;" />
+      <p style="text-align:center; font-style:italic; font-size: 1rem; margin-top: 0;">
       Two FX paths (dashed) that survive discrete monitoring yet likely breach the barrier when interpolated. Brownian bridge adjustment penalizes these cases.
       </p>
 

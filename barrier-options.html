@@ -29,7 +29,7 @@
     </div>
   </nav>
   <header>
-    <h1>A Simulation Approach to Pricing Foreign Exchange Barrier Options</h1>
+    <h1>Pricing Foreign Exchange Barrier Options</h1>
   </header>
 </body>
   <main>
@@ -60,6 +60,11 @@
         <li><strong>Heston Model</strong>: A stochastic volatility model that better captures empirical phenomena like volatility clustering and leverage effects.</li>
       </ul>
       </p>
+
+      <img src="gbm-paths.png" alt="Sample paths under GBM" style="max-width:100%; margin: 2rem 0; border: 2px solid #ccc; border-radius: 12px;" />
+      <p style="text-align:center; font-style:italic; font-size: 0.95rem;">
+      Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.
+      </p>
       
       <p>
       Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs. However, simulating barrier options naïvely introduces significant variance and discretization bias, especially when monitoring is discrete (e.g. daily or hourly).
@@ -74,18 +79,11 @@
         <li><strong>Brownian Bridge Interpolation</strong>: Since discrete sampling can miss barrier crossings, the bridge helps estimate whether the barrier was crossed between time steps.</li>
       </ul>
       </p>
-      
-      <h2>Sample Python Snippet</h2>
-      
-      <pre><code class="language-python">def simulate_gbm_paths(S0, r, sigma, T, steps, n_paths):
-          dt = T / steps
-          paths = np.zeros((n_paths, steps + 1))
-          paths[:, 0] = S0
-          for t in range(1, steps + 1):
-              Z = np.random.randn(n_paths)
-              paths[:, t] = paths[:, t-1] * np.exp((r - 0.5 * sigma**2)*dt + sigma * np.sqrt(dt) * Z)
-          return paths
-      </code></pre>
+      <img src="brownian-bridge.png" alt="Brownian bridge correction" style="max-width:100%; margin: 2rem 0; border: 2px solid #ccc; border-radius: 12px;" />
+      <p style="text-align:center; font-style:italic; font-size: 0.95rem;">
+      Two FX paths (dashed) that survive discrete monitoring yet likely breach the barrier when interpolated. Brownian bridge adjustment penalizes these cases.
+      </p>
+
       
       <h2>Results</h2>
       <p>

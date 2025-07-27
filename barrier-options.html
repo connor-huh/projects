@@ -48,13 +48,14 @@
       
       <h2>Modeling the FX Rate</h2>
       <p>
-      To simulate barrier options in an FX setting, I modeled the spot rate \( S_t \) under two stochastic processes. First, I implemented the classical geometric Brownian motion (GBM) model, which assumes constant volatility and continuous compounding — the standard in Black-Scholes-Merton-style approaches. Then, to better account for empirical volatility clustering and smile/skew effects in FX markets, I extended the simulation to incorporate the Heston model, which introduces a stochastic variance component following its own mean-reverting CIR process.
+      To simulate barrier options in an FX setting, I modeled the spot rate \( S_t \) under two stochastic processes. First, I implemented the classical geometric Brownian motion (GBM) model, which assumes constant volatility and continuous compounding. Then, to incorporate more realistic volatility seen in FX markets, I extended the simulation to include the Heston model, which introduces a stochastic variance component following its own mean-reverting process.
       </p>
       
-      <img src="gbm-paths.png" alt="Sample paths under GBM" style="max-width:100%; margin: 1.2rem 0 0.4rem 0; border: 2px solid #ccc; border-radius: 12px;" />
-      <p class="caption">
-      Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.
-      </p>
+      <img src="gbm-paths.png" alt="Sample FX spot rate paths" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
+        <figcaption style="font-size: 0.95rem; text-align: center; margin-top: 0.5rem;">
+          Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.
+        </figcaption>
+      </figure>
       
       <p>
       Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs. However, simulating barrier options naïvely introduces significant variance and discretization bias, especially when monitoring is discrete (e.g. daily or hourly).
@@ -63,18 +64,14 @@
       <h2>Variance Reduction</h2>
 
       <p>
-      After building out the core simulation framework, I quickly ran into a familiar issue: noise. Even after thousands of paths, the option values bounced around more than I expected. This wasn’t surprising — pricing barrier options via Monte Carlo is notoriously variance-heavy due to their path-dependence and discontinuity. But it was clear I needed to rein in the randomness if I wanted results that were meaningful.
+      Monte Carlo simulation has a notoriously high computation cost and high variance. To work around this, I looked into variance reduction strategies. Antithetic variates felt like an obvious first step; for each simulated path, I mirrored its Brownian motion with a negatively correlated twin, which alone helped tighten the confidence intervals. Perhaps more importantly, though, is that the discontinuity in naive simulations can often lead to missing a barrier breach, as monitoring typically isn't continuous.
       </p>
       
       <p>
-      I looked into variance reduction strategies. Antithetic variates felt like an obvious first step: for each simulated path, I mirrored its Brownian motion with a negatively correlated twin. This alone helped tighten the confidence intervals. But I also began thinking about discretization. A major subtlety with barrier options is that you might miss a barrier breach if your monitoring isn’t continuous — and this is especially problematic in naive simulations.
-      </p>
-      
-      <p>
-      To fix this, I implemented <strong>Brownian bridge interpolation</strong>, which estimates the likelihood of the barrier being breached between discrete time steps. Conceptually, it "fills in the gaps" in each path, which makes the simulation more robust. For example, two paths that appear to survive might, when interpolated, reveal that they likely crossed the barrier after all. Penalizing these paths creates a far more realistic valuation. This step made a big difference — not just numerically, but in how much I trusted the model’s output.
+      To fix this, I implemented Brownian bridge interpolation, which estimates the likelihood of the barrier being breached between discrete time steps. Conceptually, it "fills in the gaps" in each path, which makes the simulation more robust. Two paths that appear to survive might, when interpolated, reveal that they likely crossed the barrier after all. Penalizing such paths results in a far more realistic valuation.
       </p>
       <figure>
-        <img src="brownian_bridge.png" alt="Brownian bridge adjustment visualization" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
+        <img src="brownian-bridge.png" alt="Brownian bridge adjustment visualization" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
         <figcaption style="font-size: 0.95rem; text-align: center; margin-top: 0.5rem;">
           Two FX paths (dashed) that survive discrete monitoring yet likely breach the barrier when interpolated. Brownian bridge adjustment penalizes these cases.
         </figcaption>
@@ -83,19 +80,11 @@
       <h2>Results</h2>
       
       <p>
-      Once everything was in place, I ran a variety of experiments across both <em>knock-in</em> and <em>knock-out</em> options under different volatilities, interest rate spreads, and barrier levels. I started with the geometric Brownian motion (GBM) model and compared those results to the more nuanced <strong>Heston model</strong> with stochastic volatility.
+      Once everything was in place, I ran a variety of experiments across both knock-in and knock-out options under different volatilities, interest rate spreads, and barrier levels. I started with the geometric Brownian motion (GBM) model and compared those results to the more nuanced Heston model with stochastic volatility.
       </p>
       
       <p>
-      What I noticed was that the barrier’s relative distance from the current spot price had a huge influence — almost more so than the volatility itself. When the barrier was set just outside the likely range of the simulated paths, small changes in volatility or monitoring frequency could cause large shifts in the payoff probability.
-      </p>
-      
-      <p>
-      The Heston model produced more realistic values in many of these edge cases. That said, it was harder to control and less analytically tractable. It felt a bit like working with a temperamental artist: capable of brilliance, but much harder to predict.
-      </p>
-      
-      <p>
-      Even with good variance reduction, these simulations are never going to be ultra-precise. But I wasn’t trying to publish — I was trying to understand. And for that goal, the numbers were good enough.
+      What I noticed was that the barrier’s relative distance from the current spot price had a huge influence, almost more so than the volatility itself. When the barrier was set just outside the likely range of the simulated paths, small changes in volatility or monitoring frequency could engender vast shifts in the payoff probability.
       </p>
 
       
@@ -103,12 +92,7 @@
       <p>
       This project was a test of both my modeling intuition and coding precision. Writing a pricing engine from scratch—one that balanced theoretical rigor with practical speed—wasn’t easy. But I walked away with a stronger sense of how real-world derivatives get priced, and why the simplest models often hide the deepest challenges.
       </p>
-      
-      <p>
-      Going forward, I’d like to explore real-time pricing APIs, calibrate the Heston model to historical data, and maybe even try pricing American-style barrier options.
-      </p>
 
-    
     <p>
     If you're interested in the full implementation, feel free to check out the code repository and notebook breakdown.
     </p>

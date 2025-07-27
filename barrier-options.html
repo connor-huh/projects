@@ -48,31 +48,31 @@
       
       <h2>Modeling the FX Rate</h2>
       <p>
-      To simulate barrier options in an FX setting, I modeled the spot rate \( S_t \) under two stochastic processes. First, I implemented the classical geometric Brownian motion (GBM) model, which assumes constant volatility and continuous compounding. Then, to incorporate more realistic volatility seen in FX markets, I extended the simulation to include the Heston model, which introduces a stochastic variance component following its own mean-reverting process.
+      To simulate barrier options in an FX setting, I modeled the spot rate under two stochastic processes. First, I implemented the classical geometric Brownian motion (GBM) model, which assumes constant volatility and continuous compounding. Then, to incorporate more realistic volatility seen in FX markets, I extended the simulation to include the Heston model, which introduces a stochastic variance component following its own mean-reverting process.
       </p>
       
       <img src="gbm-paths.png" alt="Sample FX spot rate paths" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
-        <figcaption style="font-size: 0.95rem; text-align: center; margin-top: 0.5rem;">
+        <figcaption style="font-size: 1.05rem; font-style: italic; text-align: center; margin-top: 0.2rem;">
           Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.
         </figcaption>
       </figure>
       
       <p>
-      Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs. However, simulating barrier options naïvely introduces significant variance and discretization bias, especially when monitoring is discrete (e.g. daily or hourly).
+      Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs. However, simulating barrier options naively introduces significant variance and discretization bias, especially when monitoring is discrete.
       </p>
       
       <h2>Variance Reduction</h2>
 
       <p>
-      Monte Carlo simulation has a notoriously high computation cost and high variance. To work around this, I looked into variance reduction strategies. Antithetic variates felt like an obvious first step; for each simulated path, I mirrored its Brownian motion with a negatively correlated twin, which alone helped tighten the confidence intervals. Perhaps more importantly, though, is that the discontinuity in naive simulations can often lead to missing a barrier breach, as monitoring typically isn't continuous.
+      Monte Carlo simulation has a notoriously high computation cost and high variance. To work around this, I looked into variance reduction strategies as well. I first decided on antithetic variates, which seemed trivial to implement but extremely beneficial for reducing variance; for each simulated path, I mirrored its Brownian motion with a negatively correlated twin, which alone helped tighten the confidence intervals. Perhaps more importantly, though, is that the discontinuity in naive simulations can often lead to missing a barrier breach, as monitoring typically isn't continuous.
       </p>
       
       <p>
-      To fix this, I implemented Brownian bridge interpolation, which estimates the likelihood of the barrier being breached between discrete time steps. Conceptually, it "fills in the gaps" in each path, which makes the simulation more robust. Two paths that appear to survive might, when interpolated, reveal that they likely crossed the barrier after all. Penalizing such paths results in a far more realistic valuation.
+      To fix this, I implemented Brownian bridge interpolation, which estimates the likelihood of the barrier being breached between discrete time steps. Conceptually, it "fills in the gaps" in each path, which makes the simulation more robust. When interpolated, paths that initially appeared to survive might reveal that they likely crossed the barrier after all. 
       </p>
       <figure>
         <img src="brownian-bridge.png" alt="Brownian bridge adjustment visualization" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
-        <figcaption style="font-size: 0.95rem; text-align: center; margin-top: 0.5rem;">
+        <figcaption style="font-size: 1.05rem; font-style: italic; text-align: center; margin-top: 0.2rem;">
           Two FX paths (dashed) that survive discrete monitoring yet likely breach the barrier when interpolated. Brownian bridge adjustment penalizes these cases.
         </figcaption>
       </figure>
@@ -84,7 +84,7 @@
       </p>
       
       <p>
-      What I noticed was that the barrier’s relative distance from the current spot price had a huge influence, almost more so than the volatility itself. When the barrier was set just outside the likely range of the simulated paths, small changes in volatility or monitoring frequency could engender vast shifts in the payoff probability.
+      One thing worth mentioning is that the barrier’s relative distance from the current spot price had a noticeably huge influence, almost more so than the volatility itself. When the barrier was set just outside the likely range of the simulated paths, small changes in volatility or monitoring frequency could engender vast shifts in the payoff probability.
       </p>
 
       

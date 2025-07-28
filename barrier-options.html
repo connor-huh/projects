@@ -39,11 +39,15 @@
     <div class="content">
       <h2>Preface</h2>
       <p>
-      This paper grew out of a longer-standing interest I’ve had in using simulation to solve problems where closed-form solutions break down. I’d studied European option pricing before, but barrier options seemed like a natural next step—technically richer, more sensitive to model structure, and deeply rooted in practical finance.
+      For the past five weeks, I had the opportunity to research and write a paper on a mathematical topic of my choosing through the Independent Research and Paper Writing class offered by <a href="https://eulercircle.com/" target="_blank">Euler Circle</a>. This was my second time taking the class: two summers earlier, I wrote a paper on variational calculus (and the Brachistochrone problem in particular) under the guidance of Euler Circle director Simon Rubenstein-Salzedo and Stanford undergraduate Leonardo Bonanno. This time around, however, I was much more familiar with the process of writing mathematical papers, and wanted to contribute my own analysis to the project rather than merely amalgamating what I'd learned from a variety of sources. I also wanted to research something in applied math, which recently has piqued my interest.
+      </p>
+      <p>
+        Upon explaining this to Simon, he suggested I research Brownian motion, which I ended up taking in a financial context and transitioning it to barrier options, which are heavily tied to Brownian motion. Below is a more generally comprehensible summary of my work, though it does assume intermediate knowledge of probability theory and economics. (I think a standard understanding of each of these subjects would be enough to grasp most of what is mentioned, which should hopefully be interesting enough.)
       </p>
       
+      <h2>Acknowledgements</h2>
       <p>
-      My goal was to understand the complications of pricing path-dependent derivatives and experiment with methods that mitigate the well-known challenges of simulating rare path behavior. I wanted to implement everything from scratch—model, paths, controls, even variance reduction—both to understand how they work and to explore the limits of pure simulation.
+        Thank you to Daniel Naylor for providing valuable mentorship and support during the research and writing phases of this paper, and to Euler Circle organization and Dr. Simon Rubinstein-Salzedo, who provided the resources and platform necessary to conduct this project. All resources I used while conducting my research can be found in the full paper, which is attached at the bottom of this page.
       </p>
       
       <h2>Modeling the FX Rate</h2>
@@ -55,17 +59,17 @@
       <p class="caption"> Sample paths of the FX spot rate under geometric Brownian motion used in Monte Carlo simulation.</p>
       
       <p>
-      Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs. However, simulating barrier options naively introduces significant variance and discretization bias, especially when monitoring is discrete.
+      Using Monte Carlo simulation, I generated thousands of synthetic price paths and computed expected payoffs.
       </p>
       
       <h2>Variance Reduction</h2>
 
       <p>
-      Monte Carlo simulation has a notoriously high computation cost and high variance. To work around this, I looked into variance reduction strategies as well. I first decided on antithetic variates, which seemed trivial to implement but extremely beneficial for reducing variance; for each simulated path, I mirrored its Brownian motion with a negatively correlated twin, which alone helped tighten the confidence intervals. Perhaps more importantly, though, is that the discontinuity in naive simulations can often lead to missing a barrier breach, as monitoring typically isn't continuous.
+      Unfortunatelly, simulating barrier options using Monte Carlo naively introduces significant variance and discretization bias, especially when monitoring is discrete. To work around this, I looked into variance reduction strategies. First, I discovered antithetic variates, which was easy to implement and extremely beneficial for reducing variance; for each simulated path, I mirrored its Brownian motion with a negatively correlated twin, which alone helped tighten the confidence intervals.
       </p>
       
       <p>
-      To fix this, I implemented Brownian bridge interpolation, which estimates the likelihood of the barrier being breached between discrete time steps. Conceptually, it "fills in the gaps" in each path, which makes the simulation more robust. When interpolated, paths that initially appeared to survive might reveal that they likely crossed the barrier after all. 
+      Additionally, the discontinuity in naive simulations can often lead to missing a barrier breach, as monitoring typically isn't continuous. To fix this, I implemented Brownian bridge interpolation, which estimates the likelihood of the barrier being breached between discrete time steps. Conceptually, it "fills in the gaps" in each path, which makes the simulation more robust. When interpolated, paths that initially appeared to survive might reveal that they likely crossed the barrier after all. 
       </p>
       <img src="brownian-bridge.png" alt="Brownian bridge adjustment visualization" style="max-width:100%; border-radius: 10px; margin: 2rem 0;" />
       <p class="caption"> Two FX paths (dashed) that survive discrete monitoring yet likely breach the barrier when interpolated. Brownian bridge adjustment penalizes these cases. </p>
@@ -73,7 +77,7 @@
       <h2>Results</h2>
       
       <p>
-      Once everything was in place, I ran a variety of experiments across both knock-in and knock-out options under different volatilities, interest rate spreads, and barrier levels. I started with the geometric Brownian motion (GBM) model and compared those results to the more nuanced Heston model with stochastic volatility.
+      Once everything was in place, I ran experiments across both knock-in and knock-out options under different volatilities, interest rate spreads, and barrier levels. I began with the geometric Brownian motion (GBM) model and later compared those results to the more nuanced Heston model with stochastic volatility.
       </p>
       
       <p>
@@ -83,12 +87,11 @@
       
       <h2>Reflection</h2>
       <p>
-      This project was a test of both my modeling intuition and coding precision. Writing a pricing engine from scratch—one that balanced theoretical rigor with practical speed—wasn’t easy. But I walked away with a stronger sense of how real-world derivatives get priced, and why the simplest models often hide the deepest challenges.
+        Regardless of whether or not I end up going deeper into finance later on, I truly am happy to have learned lots about a specific area of it. I enjoy exploring the versatility of math in other fields of study, and I haven't studied finance extensively before, so it was entirely new to me. Yet the research process didn't feel any more difficult or boring to me, and I was able to bring concepts and subjects from math that I'd learned previously to do something new (and write a paper, which is something that I wanted to experience more of). I'm glad I took the class, even when it overlapped with some other summer activities, and I really did learn a lot.
       </p>
-
-    <p>
-    If you're interested in the full implementation, feel free to check out the paper I wrote using one of the links below.
-    </p>
+      <p>
+      If you're interested in the full implementation, feel free to check out the paper I wrote below.
+      </p>
     <p>
       <a href="connor-barrier-options-paper.pdf" download>
         <button style="padding: 0.5rem 1rem; font-size: 1rem; border-radius: 5px; background-color: #444; color: white; border: none;">
